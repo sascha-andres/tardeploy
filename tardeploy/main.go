@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/prometheus/log"
 
 	"path"
@@ -26,38 +25,12 @@ func main() {
 
 	configuration = config() // load configuration and validate
 
-	signals := make(chan os.Signal)
+	signals := make(chan os.Signal) // signal handling
 	signal.Notify(signals, os.Interrupt)
 	signal.Notify(signals, os.Kill)
 
-	deployments := make(chan string)
-
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer watcher.Close()
-	go func() {
-		defer close(deployments)
-		for {
-			select {
-			case event := <-watcher.Events:
-				if event.Op&fsnotify.Create == fsnotify.Create {
-					log.Println("created file:", event.Name)
-				}
-				if event.Op&fsnotify.Remove == fsnotify.Remove {
-					log.Println("removed file:", event.Name)
-				}
-			case err := <-watcher.Errors:
-				log.Println("error:", err)
-			}
-		}
-	}()
-
-	err = watcher.Add(configuration.Directories.TarballDirectory)
-	if err != nil {
-		log.Fatal(err)
-	}
+	deployments := make(chan string) // get deployment events
+	go watch(deployments)
 
 	done := make(chan bool)
 	defer close(done)
@@ -65,10 +38,10 @@ func main() {
 loop:
 	for {
 		select {
-		case s := <-signals:
+		case s := <-signals: // handle signals
 			log.Printf("Terminating program after receiving signal: %v", s)
 			break loop
-		case deployment, ok := <-deployments:
+		case deployment, ok := <-deployments: // handle deployment events
 			if !ok {
 				break loop
 			}
@@ -82,8 +55,9 @@ loop:
 }
 
 func handleChange(deployment string) {
+	log.Printf("Checking %s", path.Join(configuration.Directories.TarballDirectory, deployment))
 	ok, err := exists(path.Join(configuration.Directories.TarballDirectory, deployment))
-	if ok && err != nil {
+	if ok && err == nil {
 		if err := configuration.SetupApplication(deployment); err != nil {
 			log.Warnln(fmt.Sprintf("Error deploying application %s: %#v", deployment, err))
 		}

@@ -1,0 +1,40 @@
+package main
+
+import (
+	"strings"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/prometheus/log"
+)
+
+func watch(deployments chan<- string) {
+	done := make(chan bool)
+	defer close(done)
+
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer watcher.Close()
+	go func() {
+		defer close(deployments)
+		for {
+			select {
+			case event := <-watcher.Events:
+				if event.Op&fsnotify.Create == fsnotify.Create || event.Op&fsnotify.Remove == fsnotify.Remove {
+					parts := strings.Split(event.Name, "/")
+					deployments <- parts[len(parts)-1]
+				}
+			case err := <-watcher.Errors:
+				log.Println("error:", err)
+			}
+		}
+	}()
+
+	err = watcher.Add(configuration.Directories.TarballDirectory)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	<-done
+}

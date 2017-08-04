@@ -2,7 +2,8 @@ package tardeploy
 
 import (
 	"fmt"
-	"log"
+
+	"github.com/prometheus/log"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"

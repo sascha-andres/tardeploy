@@ -1,4 +1,4 @@
-package main
+package monitor
 
 import (
 	"strings"
@@ -7,7 +7,7 @@ import (
 	"github.com/prometheus/log"
 )
 
-func watch(deployments chan<- string) {
+func Watch(deployments chan<- string) {
 	done := make(chan bool)
 	defer close(done)
 

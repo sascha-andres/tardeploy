@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/gops/agent"
 	"github.com/sascha-andres/tardeploy"
+	"github.com/sascha-andres/tardeploy/tardeploy/monitor"
 )
 
 var (
@@ -30,7 +31,7 @@ func main() {
 	signal.Notify(signals, os.Kill)
 
 	deployments := make(chan string) // get deployment events
-	go watch(deployments)
+	go monitor.Watch(deployments)
 
 	done := make(chan bool)
 	defer close(done)

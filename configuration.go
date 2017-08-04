@@ -9,8 +9,19 @@ import (
 )
 
 type (
-	// Configuration contains all data required to handle deployments
+	// Configuration contains the daemon config
 	Configuration struct {
+		Directories DirectoryConfiguration
+		Application ApplicationHandling
+	}
+
+	// ApplicationHandling  provides information about handling older versions
+	ApplicationHandling struct {
+		NumberOfBackups int
+	}
+
+	// DirectoryConfiguration contains all data required to handle deployments
+	DirectoryConfiguration struct {
 		TarballDirectory     string // TarballDirectory denotes the place to put the tarballs
 		WebRootDirectory     string // WebRootDirectory denotes the root for the web
 		ApplicationDirectory string // ApplicationDirectory - where to store the applications
@@ -37,7 +48,7 @@ func init() {
 	viper.AddConfigPath("/etc/tardeploy")   // look in system config driectory
 	viper.AddConfigPath("$HOME/.tardeploy") // maybe user space
 	viper.AddConfigPath(".")                // local config
-	viper.SetConfigName("config")           // file is named config.[yaml|json|toml]
+	viper.SetConfigName("tardeploy")        // file is named tardeploy.[yaml|json|toml]
 
 	viper.AutomaticEnv() // read in environment variables that match
 }

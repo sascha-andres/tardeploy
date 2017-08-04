@@ -2,65 +2,97 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 
-	"time"
+	"github.com/fsnotify/fsnotify"
+	"github.com/prometheus/log"
 
 	"path"
 
 	"github.com/google/gops/agent"
 	"github.com/sascha-andres/tardeploy"
-	"github.com/sascha-andres/tardeploy/handler"
 )
 
 var (
-	configuration tardeploy.Configuration
+	configuration *tardeploy.Configuration
 )
 
 func main() {
 	// gops
 	if err := agent.Listen(nil); err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 
-	config() // load configuration and validate
+	configuration = config() // load configuration and validate
 
 	signals := make(chan os.Signal)
 	signal.Notify(signals, os.Interrupt)
+	signal.Notify(signals, os.Kill)
 
 	deployments := make(chan string)
+
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer watcher.Close()
 	go func() {
-		// TODO setup watcher [ get changes file, pass to handler ]
 		defer close(deployments)
-		time.Sleep(5 * time.Second)
-		deployments <- "hallo"
+		for {
+			select {
+			case event := <-watcher.Events:
+				if event.Op&fsnotify.Create == fsnotify.Create {
+					log.Println("created file:", event.Name)
+				}
+				if event.Op&fsnotify.Remove == fsnotify.Remove {
+					log.Println("removed file:", event.Name)
+				}
+			case err := <-watcher.Errors:
+				log.Println("error:", err)
+			}
+		}
 	}()
+
+	err = watcher.Add(configuration.Directories.TarballDirectory)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	done := make(chan bool)
+	defer close(done)
 
 loop:
 	for {
 		select {
 		case s := <-signals:
-			log.Printf("Terminating program after receiving signal: %v\n", s)
+			log.Printf("Terminating program after receiving signal: %v", s)
 			break loop
-		case deployment := <-deployments:
-			go handleChange(deployment)
+		case deployment, ok := <-deployments:
+			if !ok {
+				break loop
+			}
+			if "" != deployment {
+				go handleChange(deployment)
+			}
 		}
 	}
+
+	<-done
 }
+
 func handleChange(deployment string) {
-	ok, err := exists(path.Join(configuration.TarballDirectory, deployment))
+	ok, err := exists(path.Join(configuration.Directories.TarballDirectory, deployment))
 	if ok && err != nil {
-		if err := handler.SetupApplication(deployment, configuration); err != nil {
-			log.Println(fmt.Sprintf("Error deploying application %s: %#v", deployment, err))
+		if err := configuration.SetupApplication(deployment); err != nil {
+			log.Warnln(fmt.Sprintf("Error deploying application %s: %#v", deployment, err))
 		}
 	} else {
 		if err != nil {
-			log.Println(fmt.Sprintf("Error deploying application %s: %#v", deployment, err))
+			log.Warnln(fmt.Sprintf("Error deploying application %s: %#v", deployment, err))
 		} else {
-			if err := handler.RemoveApplication(deployment, configuration); err != nil {
-				log.Println(fmt.Sprintf("Error removing application %s: %#v", deployment, err))
+			if err := configuration.RemoveApplication(deployment); err != nil {
+				log.Warnln(fmt.Sprintf("Error removing application %s: %#v", deployment, err))
 			}
 		}
 	}

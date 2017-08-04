@@ -2,25 +2,28 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
+
+	"github.com/prometheus/log"
 
 	"github.com/sascha-andres/tardeploy"
 )
 
-func config() {
-	configuration, err := tardeploy.LoadConfiguration()
+func config() *tardeploy.Configuration {
+	cfg, err := tardeploy.LoadConfiguration()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(fmt.Sprintf("TarballDirectory:     [%s]", configuration.TarballDirectory))
-	log.Println(fmt.Sprintf("ApplicationDirectory: [%s]", configuration.ApplicationDirectory))
-	log.Println(fmt.Sprintf("WebRootDirectory:     [%s]", configuration.WebRootDirectory))
-	log.Println(fmt.Sprintf("WebOwner:             [%s]", configuration.WebOwner))
+	log.Println(fmt.Sprintf("TarballDirectory: [%s]", cfg.Directories.TarballDirectory))
+	log.Println(fmt.Sprintf("ApplicationDirectory: [%s]", cfg.Directories.ApplicationDirectory))
+	log.Println(fmt.Sprintf("WebRootDirectory: [%s]", cfg.Directories.WebRootDirectory))
+	log.Println(fmt.Sprintf("WebOwner: [%s]", cfg.Directories.WebOwner))
 
-	mustExist("WebRootDirectory", configuration.WebRootDirectory)
-	mustExist("ApplicationDirectory", configuration.ApplicationDirectory)
-	mustExist("TarballDirectory", configuration.TarballDirectory)
+	mustExist("WebRootDirectory", cfg.Directories.WebRootDirectory)
+	mustExist("ApplicationDirectory", cfg.Directories.ApplicationDirectory)
+	mustExist("TarballDirectory", cfg.Directories.TarballDirectory)
+
+	return cfg
 }
 
 func mustExist(name, path string) {

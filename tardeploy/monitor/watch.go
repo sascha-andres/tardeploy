@@ -21,7 +21,7 @@ func Watch(deployments chan<- string) {
 		for {
 			select {
 			case event := <-watcher.Events:
-				if event.Op&fsnotify.Create == fsnotify.Create || event.Op&fsnotify.Remove == fsnotify.Remove {
+				if event.Op&fsnotify.Create == fsnotify.Create || event.Op&fsnotify.Remove == fsnotify.Remove || event.Op&fsnotify.Write == fsnotify.Write {
 					parts := strings.Split(event.Name, "/")
 					deployments <- parts[len(parts)-1]
 				}

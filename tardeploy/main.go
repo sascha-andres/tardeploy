@@ -31,7 +31,7 @@ func main() {
 	signal.Notify(signals, os.Kill)
 
 	deployments := make(chan string) // get deployment events
-	go monitor.Watch(deployments)
+	go monitor.Watch(configuration.Directories.TarballDirectory, deployments)
 
 	done := make(chan bool)
 	defer close(done)

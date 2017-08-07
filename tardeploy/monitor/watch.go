@@ -7,7 +7,7 @@ import (
 	"github.com/prometheus/log"
 )
 
-func Watch(deployments chan<- string) {
+func Watch(directory string, deployments chan<- string) {
 	done := make(chan bool)
 	defer close(done)
 
@@ -31,7 +31,7 @@ func Watch(deployments chan<- string) {
 		}
 	}()
 
-	err = watcher.Add(configuration.Directories.TarballDirectory)
+	err = watcher.Add(directory)
 	if err != nil {
 		log.Fatal(err)
 	}

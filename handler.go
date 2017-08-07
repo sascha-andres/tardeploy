@@ -39,7 +39,7 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 	}
 
 	// TODO ensure files
-	if err := deflate.DeflateTarball(path.Join(configuration.Directories.TarballDirectory, tarball), versionPath); err != nil {
+	if err := deflate.Tarball(path.Join(configuration.Directories.TarballDirectory, tarball), versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not deflate %s", tarball))
 	}
 	// chown

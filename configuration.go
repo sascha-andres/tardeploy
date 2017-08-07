@@ -21,12 +21,17 @@ type (
 		NumberOfBackups int
 	}
 
+	FileSecurity struct {
+		User  string // User or UID for file/directory owner
+		Group string // Group or UID for file/directory owner
+	}
+
 	// DirectoryConfiguration contains all data required to handle deployments
 	DirectoryConfiguration struct {
-		TarballDirectory     string // TarballDirectory denotes the place to put the tarballs
-		WebRootDirectory     string // WebRootDirectory denotes the root for the web
-		ApplicationDirectory string // ApplicationDirectory - where to store the applications
-		WebOwner             string // Owner of the files
+		TarballDirectory     string       // TarballDirectory denotes the place to put the tarballs
+		WebRootDirectory     string       // WebRootDirectory denotes the root for the web
+		ApplicationDirectory string       // ApplicationDirectory - where to store the applications
+		Security             FileSecurity // Chown information
 	}
 )
 

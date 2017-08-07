@@ -12,7 +12,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/prometheus/log"
-	"github.com/sascha-andres/tardeploy/deflate"
 )
 
 // to handle gzip: compress/gzip
@@ -38,11 +37,9 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 		return errors.Wrap(err, fmt.Sprintf("Could not handle directories %s", application))
 	}
 
-	// TODO ensure files
-	if err := deflate.Tarball(path.Join(configuration.Directories.TarballDirectory, tarball), versionPath); err != nil {
-		return errors.Wrap(err, fmt.Sprintf("Could not deflate %s", tarball))
+	if err := configuration.ensureFiles(path.Join(configuration.Directories.TarballDirectory, tarball), versionPath); err != nil {
+		return errors.Wrap(err, fmt.Sprintf("Could not handle files %s", tarball))
 	}
-	// chown
 
 	if err := configuration.recreateWebSymbolicLink(application, versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not handle symbolic link for %s", application))

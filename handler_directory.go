@@ -38,5 +38,5 @@ func ensureDirectory(directory string) error {
 			return errors.Wrap(err, "Could not check if directory exists")
 		}
 	}
-	return errors.New("Not implemented")
+	return nil
 }

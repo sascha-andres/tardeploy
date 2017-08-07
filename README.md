@@ -1,3 +1,3 @@
 # tardeploy
 
-A tool to deploy web sites using a tarball to directories.
+A tool to automate deployment of web applications onto a web server

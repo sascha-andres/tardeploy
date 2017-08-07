@@ -4,6 +4,8 @@ Directories:
   TarballDirectory: /home/andres/tardeploy/tarballs/
   WebRootDirectory: /home/andres/tardeploy/webroot
   ApplicationDirectory: /home/andres/tardeploy/apps
-  WebOwner: www-data:www-data
+  Security:
+    User: andres
+    Group: andres
 Application:
   NumberOfBackups: 1

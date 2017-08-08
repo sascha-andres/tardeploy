@@ -17,6 +17,27 @@ var (
 	configuration *tardeploy.Configuration
 )
 
+func setupLogLevel(level string) {
+	switch level {
+	case "debug":
+		log.SetLevel(log.DebugLevel)
+		break
+	case "info":
+		log.SetLevel(log.InfoLevel)
+		break
+	case "warn":
+		log.SetLevel(log.WarnLevel)
+		break
+	case "error":
+		log.SetLevel(log.ErrorLevel)
+		break
+	_:
+		log.SetLevel(log.InfoLevel)
+		break
+	}
+	log.Infof("Log level set to %s", level)
+}
+
 func main() {
 	// gops
 	if err := agent.Listen(nil); err != nil {

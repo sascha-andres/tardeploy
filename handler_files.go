@@ -3,7 +3,6 @@ package tardeploy
 import (
 	"fmt"
 	"os"
-	"path"
 	"strconv"
 
 	"path/filepath"
@@ -21,7 +20,7 @@ func (configuration *Configuration) ensureFiles(tarball, versionPath string) err
 		groupID int
 		err     error
 	)
-	if err := deflate.Tarball(path.Join(configuration.Directories.TarballDirectory, tarball), versionPath); err != nil {
+	if err := deflate.Tarball(tarball, versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not deflate %s", tarball))
 	}
 

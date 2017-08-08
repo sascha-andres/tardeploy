@@ -10,4 +10,6 @@ Directories:
 Application:
   NumberOfBackups: 1
   BatchInterval: 10
-  LogLevel: debug
+  LogLevel: info
+Trigger:
+  Before: /bin/echo

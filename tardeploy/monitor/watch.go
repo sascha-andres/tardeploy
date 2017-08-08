@@ -1,17 +1,20 @@
 package monitor
 
 import (
-	"strings"
+	"time"
 
-	"github.com/fsnotify/fsnotify"
-	"github.com/prometheus/log"
+	log "github.com/sirupsen/logrus"
 )
 
 func Watch(directory string, deployments chan<- string) {
 	done := make(chan bool)
 	defer close(done)
 
-	watcher, err := fsnotify.NewWatcher()
+	watcher, err := NewBatcher(5 * time.Second)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -21,13 +24,11 @@ func Watch(directory string, deployments chan<- string) {
 		for {
 			select {
 			case event := <-watcher.Events:
-				// event.Op&fsnotify.Create == fsnotify.Create ||
-				if event.Op&fsnotify.Remove == fsnotify.Remove || event.Op&fsnotify.Write == fsnotify.Write {
-					parts := strings.Split(event.Name, "/")
-					deployments <- parts[len(parts)-1]
+				for key, _ := range event {
+					deployments <- key
 				}
 			case err := <-watcher.Errors:
-				log.Println("error:", err)
+				log.Errorf("error:", err)
 			}
 		}
 	}()

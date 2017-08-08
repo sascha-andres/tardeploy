@@ -9,24 +9,19 @@ import (
 )
 
 func (configuration *Configuration) recreateWebSymbolicLink(application, versionPath string) error {
-	if err := configuration.removeWebSymbolicLink(application); err != nil {
-		return errors.Wrap(err, fmt.Sprintf("Could not remove old symbolic link for %s", application))
+	var err error
+	if err = configuration.removeWebSymbolicLink(application); err != nil {
+		return err
 	}
-	if err := configuration.createWebSymbolicLink(application, versionPath); err != nil {
+	if err = configuration.createWebSymbolicLink(application, versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not create new symbolic link for %s", application))
 	}
-	return nil
+	return err
 }
 
 func (configuration *Configuration) removeWebSymbolicLink(application string) error {
-	if ok, err := exists(path.Join(configuration.Directories.WebRootDirectory, application)); !ok {
-		return nil
-	} else {
-		if err != nil {
-			return errors.Wrap(err, "Could not remove symbolic link to old version")
-		}
-	}
-	return os.Remove(path.Join(configuration.Directories.WebRootDirectory, application))
+	os.Remove(path.Join(configuration.Directories.WebRootDirectory, application))
+	return nil
 }
 
 func (configuration *Configuration) createWebSymbolicLink(application, versionPath string) error {

@@ -6,7 +6,7 @@ import (
 	"path"
 
 	"github.com/pkg/errors"
-	"github.com/prometheus/log"
+	log "github.com/sirupsen/logrus"
 )
 
 func (configuration *Configuration) ensureDirectories(application, versionPath string) error {
@@ -21,12 +21,12 @@ func (configuration *Configuration) ensureDirectories(application, versionPath s
 }
 
 func (configuration *Configuration) ensureAppDirectory(application string) error {
-	log.Println(fmt.Sprintf("Ensuring app directory for %s", application))
+	log.Infof("Ensuring app directory for %s", application)
 	return ensureDirectory(path.Join(configuration.Directories.ApplicationDirectory, application))
 }
 
 func ensureDirectory(directory string) error {
-	log.Println(fmt.Sprintf("Ensuring directory %s", directory))
+	log.Infof("Ensuring directory %s", directory)
 	if ok, err := exists(directory); !ok {
 		log.Debugf("Creating %s", directory)
 		err := os.MkdirAll(directory, 0750)

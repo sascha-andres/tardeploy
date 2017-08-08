@@ -1,9 +1,7 @@
 package tardeploy
 
 import (
-	"fmt"
-
-	"github.com/prometheus/log"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -50,7 +48,7 @@ func LoadConfiguration() (*Configuration, error) {
 	}
 
 	// Confirm which config file is used
-	log.Println(fmt.Sprintf("Using config:         [%s]", viper.ConfigFileUsed()))
+	log.Debugf("Using config:         [%s]", viper.ConfigFileUsed())
 
 	var config Configuration
 	err := viper.Unmarshal(&config)

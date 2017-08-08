@@ -10,8 +10,8 @@ import (
 	"os/user"
 
 	"github.com/pkg/errors"
-	"github.com/prometheus/log"
 	"github.com/sascha-andres/tardeploy/deflate"
+	log "github.com/sirupsen/logrus"
 )
 
 func (configuration *Configuration) ensureFiles(tarball, versionPath string) error {

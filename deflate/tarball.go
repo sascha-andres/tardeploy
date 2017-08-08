@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/prometheus/log"
+	log "github.com/sirupsen/logrus"
 
 	"path"
 

@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 
-	"github.com/prometheus/log"
+	log "github.com/sirupsen/logrus"
 
 	"path"
 
@@ -40,7 +39,7 @@ loop:
 	for {
 		select {
 		case s := <-signals: // handle signals
-			log.Printf("Terminating program after receiving signal: %v", s)
+			log.Infof("Terminating program after receiving signal: %v", s)
 			break loop
 		case deployment, ok := <-deployments: // handle deployment events
 			if !ok {
@@ -56,18 +55,18 @@ loop:
 }
 
 func handleChange(deployment string) {
-	log.Printf("Checking %s", path.Join(configuration.Directories.TarballDirectory, deployment))
+	log.Infof("Checking %s", path.Join(configuration.Directories.TarballDirectory, deployment))
 	ok, err := exists(path.Join(configuration.Directories.TarballDirectory, deployment))
 	if ok && err == nil {
 		if err := configuration.SetupApplication(deployment); err != nil {
-			log.Warnln(fmt.Sprintf("Error deploying application %s: %#v", deployment, err))
+			log.Warnf("Error deploying application %s: %#v", deployment, err)
 		}
 	} else {
 		if err != nil {
-			log.Warnln(fmt.Sprintf("Error deploying application %s: %#v", deployment, err))
+			log.Warnf("Error deploying application %s: %#v", deployment, err)
 		} else {
 			if err := configuration.RemoveApplication(deployment); err != nil {
-				log.Warnln(fmt.Sprintf("Error removing application %s: %#v", deployment, err))
+				log.Warnf("Error removing application %s: %#v", deployment, err)
 			}
 		}
 	}

@@ -11,14 +11,14 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/prometheus/log"
+	log "github.com/sirupsen/logrus"
 )
 
 // to handle gzip: compress/gzip
 // to handle  tar: archive/tar
 
 func (configuration *Configuration) SetupApplication(tarball string) error {
-	log.Println(fmt.Sprintf("Setup for %s", tarball))
+	log.Infof("Setup for %s", tarball)
 
 	var (
 		application string
@@ -54,13 +54,13 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 		return errors.Wrap(err, fmt.Sprintf("Could not handle symbolic link for %s", application))
 	}
 
-	// remove directories that are not part of configured backup delay
+	configuration.backup(application)
 
 	return nil
 }
 
 func (configuration *Configuration) RemoveApplication(tarball string) error {
-	log.Println(fmt.Sprintf("Remove for %s", tarball))
+	log.Infof("Remove for %s", tarball)
 
 	var (
 		application string

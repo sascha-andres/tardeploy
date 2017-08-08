@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/prometheus/log"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/sascha-andres/tardeploy"
 )
@@ -14,10 +14,10 @@ func config() *tardeploy.Configuration {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(fmt.Sprintf("TarballDirectory: [%s]", cfg.Directories.TarballDirectory))
-	log.Println(fmt.Sprintf("ApplicationDirectory: [%s]", cfg.Directories.ApplicationDirectory))
-	log.Println(fmt.Sprintf("WebRootDirectory: [%s]", cfg.Directories.WebRootDirectory))
-	log.Println(fmt.Sprintf("WebOwner: [%s:%s]", cfg.Directories.Security.User, cfg.Directories.Security.Group))
+	log.Infof("TarballDirectory: [%s]", cfg.Directories.TarballDirectory)
+	log.Infof("ApplicationDirectory: [%s]", cfg.Directories.ApplicationDirectory)
+	log.Infof("WebRootDirectory: [%s]", cfg.Directories.WebRootDirectory)
+	log.Infof("WebOwner: [%s:%s]", cfg.Directories.Security.User, cfg.Directories.Security.Group)
 
 	mustExist("WebRootDirectory", cfg.Directories.WebRootDirectory)
 	mustExist("ApplicationDirectory", cfg.Directories.ApplicationDirectory)

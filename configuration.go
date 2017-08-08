@@ -23,7 +23,9 @@ type (
 
 	// ApplicationHandling  provides information about handling older versions
 	ApplicationHandling struct {
-		NumberOfBackups int
+		NumberOfBackups int    // How many old versions to keep
+		BatchInterval   int    // How long to wait until the file changes are passed to tardeploy
+		LogLevel        string // Log levels included debug -> info -> warn -> error
 	}
 
 	// FileSecurity defines the ownership of files

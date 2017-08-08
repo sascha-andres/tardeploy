@@ -33,7 +33,7 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 		return errors.Wrap(err, "Could not run trigger")
 	}
 	defer func() {
-		if err := configuration.beforeRunTrigger(application); err != nil {
+		if err := configuration.afterRunTrigger(application); err != nil {
 			log.Warnf("Could not run after trigger: %s", err.Error())
 		}
 	}()

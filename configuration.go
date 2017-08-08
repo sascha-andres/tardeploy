@@ -57,6 +57,7 @@ type (
 	}
 )
 
+// LoadConfiguration gets the configuration from a config file
 func LoadConfiguration() (*Configuration, error) {
 	// Searches for config file in given paths and read it
 	if err := viper.ReadInConfig(); err != nil {

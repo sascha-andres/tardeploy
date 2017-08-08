@@ -2,6 +2,8 @@
 
 A tool to automate deployment of web applications onto a web server
 
+[![codebeat badge](https://codebeat.co/badges/d0cafabb-061d-4b17-9476-80ac086535c7)](https://codebeat.co/projects/github-com-sascha-andres-tardeploy-master) [![Go Report Card](https://goreportcard.com/badge/github.com/sascha-andres/tardeploy)](https://goreportcard.com/report/github.com/sascha-andres/tardeploy)
+
 ## Configuration
 
 Configuration is split into three main parts:

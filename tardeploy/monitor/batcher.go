@@ -33,7 +33,7 @@ type Batcher struct {
 	Events chan map[string]bool // Events are returned on this channel
 }
 
-// New creates and starts a Batcher with the given time interval.
+// NewBatcher creates and starts a Batcher with the given time interval.
 func NewBatcher(interval time.Duration) (*Batcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 

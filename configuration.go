@@ -28,7 +28,7 @@ type (
 		Trigger     TriggerConfiguration
 	}
 
-	// Trigger provides a place to configure triggers ( external programs ) called before or after a deployment
+	// TriggerConfiguration provides a place to configure triggers ( external programs ) called before or after a deployment
 	TriggerConfiguration struct {
 		Before string
 		After  string

@@ -19,6 +19,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Watch starts looking for files placed in directory
 func Watch(directory string, batchInterval int, deployments chan<- string) {
 	done := make(chan bool)
 	defer close(done)
@@ -39,11 +40,11 @@ func Watch(directory string, batchInterval int, deployments chan<- string) {
 		for {
 			select {
 			case event := <-watcher.Events:
-				for key, _ := range event {
+				for key := range event {
 					deployments <- key
 				}
 			case err := <-watcher.Errors:
-				log.Errorf("error:", err)
+				log.Errorf("Error: %s", err.Error())
 			}
 		}
 	}()

@@ -20,7 +20,10 @@ func (configuration *Configuration) recreateWebSymbolicLink(application, version
 }
 
 func (configuration *Configuration) removeWebSymbolicLink(application string) error {
-	os.Remove(path.Join(configuration.Directories.WebRootDirectory, application))
+	symlinkPath := path.Join(configuration.Directories.WebRootDirectory, application)
+	if _, err := os.Lstat(symlinkPath); err == nil {
+		return os.Remove(symlinkPath)
+	}
 	return nil
 }
 

@@ -24,13 +24,14 @@ func main() {
 	}
 
 	configuration = config() // load configuration and validate
+	setupLogLevel(configuration.Application.LogLevel)
 
 	signals := make(chan os.Signal) // signal handling
 	signal.Notify(signals, os.Interrupt)
 	signal.Notify(signals, os.Kill)
 
 	deployments := make(chan string) // get deployment events
-	go monitor.Watch(configuration.Directories.TarballDirectory, deployments)
+	go monitor.Watch(configuration.Directories.TarballDirectory, configuration.Application.BatchInterval, deployments)
 
 	done := make(chan bool)
 	defer close(done)

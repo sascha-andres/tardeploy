@@ -7,6 +7,7 @@ import (
 
 	"path/filepath"
 
+	"os/exec"
 	"os/user"
 
 	"github.com/pkg/errors"
@@ -14,14 +15,39 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func (configuration *Configuration) callTarCommand(tarball, directory string) error {
+	log.Infof("Calling '%s xzf %s' in %s", configuration.Application.TarCommand, tarball, directory)
+	command := exec.Command(configuration.Application.TarCommand, "xzf", tarball)
+	command.Stdout = os.Stdout
+	command.Stdin = os.Stdin
+	command.Stderr = os.Stderr
+	command.Dir = directory
+	var err error
+	if err = command.Start(); err != nil {
+		return errors.Wrap(err, "could not start command")
+	}
+	err = command.Wait()
+	if err != nil {
+		return errors.Wrap(err, "Could not wait for command")
+	}
+
+	return nil
+}
+
 func (configuration *Configuration) ensureFiles(tarball, versionPath string) error {
 	var (
 		userID  int
 		groupID int
 		err     error
 	)
-	if err := deflate.Tarball(tarball, versionPath); err != nil {
-		return errors.Wrap(err, fmt.Sprintf("Could not deflate %s", tarball))
+	if configuration.Application.TarCommand == "" {
+		if err := deflate.Tarball(tarball, versionPath); err != nil {
+			return errors.Wrap(err, fmt.Sprintf("Could not deflate %s", tarball))
+		}
+	} else {
+		if err := configuration.callTarCommand(tarball, versionPath); err != nil {
+			return errors.Wrap(err, fmt.Sprintf("Could not exec tar command for %s", tarball))
+		}
 	}
 
 	if userID, err = configuration.getUIDForUser(); err != nil {

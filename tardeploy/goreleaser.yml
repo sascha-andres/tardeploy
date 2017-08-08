@@ -1,0 +1,11 @@
+project_name: tardeploy
+
+build:
+    binary: tardeploy
+    goos:
+      - linux
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=0
+    flags: -a

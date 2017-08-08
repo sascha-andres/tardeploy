@@ -52,6 +52,8 @@ func setupLogLevel(level string) {
 }
 
 func main() {
+	log.WithField("version", version).Info("tardeploy")
+
 	// gops
 	if err := agent.Listen(nil); err != nil {
 		log.Fatalln(err)

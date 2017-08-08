@@ -72,9 +72,9 @@ func extractTarGz(destinationDirectory string, gzipStream io.Reader) error {
 				return errors.Wrap(err, "extractTarGz: Copy() failed")
 			}
 		default:
-			return errors.New(fmt.Sprintf("extractTarGz: unknown type: %s in %s",
+			return fmt.Errorf("extractTarGz: unknown type: %v in %s",
 				header.Typeflag,
-				header.Name))
+				header.Name)
 		}
 	}
 

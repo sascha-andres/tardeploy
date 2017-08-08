@@ -44,7 +44,7 @@ func setupLogLevel(level string) {
 	case "error":
 		log.SetLevel(log.ErrorLevel)
 		break
-	_:
+	default:
 		log.SetLevel(log.InfoLevel)
 		break
 	}

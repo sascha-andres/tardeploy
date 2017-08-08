@@ -14,6 +14,13 @@ type (
 	Configuration struct {
 		Directories DirectoryConfiguration
 		Application ApplicationHandling
+		Trigger     TriggerConfiguration
+	}
+
+	// Trigger provides a place to configure triggers ( external programs ) called before or after a deployment
+	TriggerConfiguration struct {
+		Before string
+		After  string
 	}
 
 	// ApplicationHandling  provides information about handling older versions

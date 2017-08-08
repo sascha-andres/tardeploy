@@ -13,7 +13,7 @@ func (configuration *Configuration) ensureDirectories(application, versionPath s
 	if err := configuration.ensureAppDirectory(application); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not setup %s", application))
 	}
-	log.Debugf("Ensuring path for timestamp (%s) exists", versionPath)
+	log.Infof("Ensuring path for timestamp (%s) exists", versionPath)
 	if err := ensureDirectory(versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not create %s", versionPath))
 	}
@@ -26,7 +26,7 @@ func (configuration *Configuration) ensureAppDirectory(application string) error
 }
 
 func ensureDirectory(directory string) error {
-	log.Infof("Ensuring directory %s", directory)
+	log.Debugf("Ensuring directory %s", directory)
 	if ok, err := exists(directory); !ok {
 		log.Debugf("Creating %s", directory)
 		err := os.MkdirAll(directory, 0750)

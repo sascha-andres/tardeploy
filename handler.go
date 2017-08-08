@@ -41,6 +41,7 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 	timestamp := time.Now().Format("20060102150405")
 	log.Debugf("Using timestamp %s", timestamp)
 	versionPath := path.Join(configuration.Directories.ApplicationDirectory, application, timestamp)
+	log.Infof("Deployment path: %s", versionPath)
 
 	if err := configuration.ensureDirectories(application, versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not handle directories %s", application))
@@ -77,8 +78,6 @@ func (configuration *Configuration) RemoveApplication(tarball string) error {
 
 	return os.RemoveAll(path.Join(configuration.Directories.ApplicationDirectory, application))
 }
-
-// helper
 
 func makeApplication(tarball string) (string, error) {
 	if !strings.HasSuffix(tarball, ".tgz") && !strings.HasSuffix(tarball, ".tar.gz") {

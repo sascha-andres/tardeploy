@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 func (configuration *Configuration) recreateWebSymbolicLink(application, versionPath string) error {
@@ -22,11 +23,14 @@ func (configuration *Configuration) recreateWebSymbolicLink(application, version
 func (configuration *Configuration) removeWebSymbolicLink(application string) error {
 	symlinkPath := path.Join(configuration.Directories.WebRootDirectory, application)
 	if _, err := os.Lstat(symlinkPath); err == nil {
+		log.Debugf("Removing symbolic link %s")
 		return os.Remove(symlinkPath)
 	}
 	return nil
 }
 
 func (configuration *Configuration) createWebSymbolicLink(application, versionPath string) error {
-	return os.Symlink(versionPath, path.Join(configuration.Directories.WebRootDirectory, application))
+	deploymentDirectory := path.Join(configuration.Directories.WebRootDirectory, application)
+	log.Debugf("Link from %s to %s", versionPath, deploymentDirectory)
+	return os.Symlink(versionPath, deploymentDirectory)
 }

@@ -39,8 +39,11 @@ func (configuration *Configuration) backup(application string) error {
 	directoriesToRemove := directories[configuration.Application.NumberOfBackups+1:]
 
 	for _, value := range directoriesToRemove {
-		if err := os.RemoveAll(path.Join(appDirectory, value)); err != nil {
+		deploymentDirectory := path.Join(appDirectory, value)
+		if err := os.RemoveAll(deploymentDirectory); err != nil {
 			log.Warnf("Could not remove %s: %#v", value, err)
+		} else {
+			log.Infof("Removed old deployment directory %s", deploymentDirectory)
 		}
 	}
 

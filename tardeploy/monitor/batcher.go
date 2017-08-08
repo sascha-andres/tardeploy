@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/prometheus/log"
 )
 
 // Batcher batches file watch events in a given interval.
@@ -49,6 +50,7 @@ OuterLoop:
 				}
 			}
 		case <-tick:
+			log.Debug("Batch interval done")
 			if len(evs) == 0 {
 				continue
 			}

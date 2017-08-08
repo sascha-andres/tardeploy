@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/prometheus/log"
+	log "github.com/sirupsen/logrus"
 )
 
 // Batcher batches file watch events in a given interval.

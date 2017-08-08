@@ -27,6 +27,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// SetupApplication deploys an application
 func (configuration *Configuration) SetupApplication(tarball string) error {
 	log.Infof("Setup for %s", tarball)
 
@@ -70,6 +71,7 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 	return nil
 }
 
+// RemoveApplication removes an application from the server
 func (configuration *Configuration) RemoveApplication(tarball string) error {
 	log.Infof("Remove for %s", tarball)
 

@@ -42,7 +42,7 @@ OuterLoop:
 	for {
 		select {
 		case ev := <-b.Watcher.Events:
-			if ev.Op&fsnotify.Remove == fsnotify.Remove || ev.Op&fsnotify.Write == fsnotify.Write {
+			if ev.Op&fsnotify.Remove == fsnotify.Remove || ev.Op&fsnotify.Write == fsnotify.Write || ev.op&fsnotify.Rename == fsnotify.Rename {
 				parts := strings.Split(ev.Name, "/")
 				if _, ok := evs[parts[len(parts)-1]]; !ok {
 					evs[parts[len(parts)-1]] = true

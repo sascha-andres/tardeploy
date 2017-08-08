@@ -29,6 +29,15 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 		return errors.Wrap(err, fmt.Sprintf("Could not determine application name for %s", tarball))
 	}
 
+	if err := configuration.beforeRunTrigger(application); err != nil {
+		return errors.Wrap(err, "Could not run trigger")
+	}
+	defer func() {
+		if err := configuration.beforeRunTrigger(application); err != nil {
+			log.Warnf("Could not run after trigger: %s", err.Error())
+		}
+	}()
+
 	timestamp := time.Now().Format("20060102150405")
 	log.Debugf("Using timestamp %s", timestamp)
 	versionPath := path.Join(configuration.Directories.ApplicationDirectory, application, timestamp)

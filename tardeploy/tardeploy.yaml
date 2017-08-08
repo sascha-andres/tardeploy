@@ -9,3 +9,5 @@ Directories:
     Group: andres
 Application:
   NumberOfBackups: 1
+  BatchInterval: 10
+  LogLevel: debug

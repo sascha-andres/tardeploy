@@ -34,7 +34,8 @@ func (configuration *Configuration) backup(application string) error {
 	if len(directories) <= configuration.Application.NumberOfBackups+1 {
 		return nil
 	}
-	sort.Strings(directories)
+	sort.Sort(sort.Reverse(sort.StringSlice(directories)))
+
 	directoriesToRemove := directories[configuration.Application.NumberOfBackups+1:]
 
 	for _, value := range directoriesToRemove {

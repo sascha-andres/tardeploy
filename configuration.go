@@ -26,6 +26,7 @@ type (
 		NumberOfBackups int    // How many old versions to keep
 		BatchInterval   int    // How long to wait until the file changes are passed to tardeploy
 		LogLevel        string // Log levels included debug -> info -> warn -> error
+		TarCommand      string // Set this to a binary to execute external tar command
 	}
 
 	// FileSecurity defines the ownership of files

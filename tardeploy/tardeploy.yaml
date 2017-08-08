@@ -1,0 +1,15 @@
+---
+
+Directories:
+  TarballDirectory: /home/andres/tardeploy/tarballs/
+  WebRootDirectory: /home/andres/tardeploy/webroot
+  ApplicationDirectory: /home/andres/tardeploy/apps
+  Security:
+    User: andres
+    Group: andres
+Application:
+  NumberOfBackups: 1
+  BatchInterval: 10
+  LogLevel: info
+Trigger:
+  Before: /bin/echo

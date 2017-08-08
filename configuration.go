@@ -21,6 +21,7 @@ type (
 		NumberOfBackups int
 	}
 
+	// FileSecurity defines the ownership of files
 	FileSecurity struct {
 		User  string // User or UID for file/directory owner
 		Group string // Group or UID for file/directory owner

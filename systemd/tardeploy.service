@@ -1,0 +1,13 @@
+[Unit]
+Description=tardeploy
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory/opt/tardeploy
+ExecStart=/opt/tardeploy/bin/tardeploy
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

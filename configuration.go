@@ -14,6 +14,7 @@
 package tardeploy
 
 import (
+	"github.com/sascha-andres/tardeploy/trigger"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/pkg/errors"
@@ -25,13 +26,7 @@ type (
 	Configuration struct {
 		Directories DirectoryConfiguration
 		Application ApplicationHandling
-		Trigger     TriggerConfiguration
-	}
-
-	// TriggerConfiguration provides a place to configure triggers ( external programs ) called before or after a deployment
-	TriggerConfiguration struct {
-		Before string
-		After  string
+		Trigger     trigger.Configuration
 	}
 
 	// ApplicationHandling  provides information about handling older versions

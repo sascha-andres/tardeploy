@@ -11,7 +11,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package tardeploy
+package backup
 
 import (
 	"path"
@@ -26,12 +26,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (configuration *Configuration) backup(application string) error {
-	if configuration.Application.NumberOfBackups == -1 {
+func Execute(appDirectory string, numberOfBackups int) error {
+	if numberOfBackups < 0 {
 		return nil
 	}
-
-	appDirectory := path.Join(configuration.Directories.ApplicationDirectory, application)
 
 	files, err := ioutil.ReadDir(appDirectory)
 	if err != nil {
@@ -44,12 +42,12 @@ func (configuration *Configuration) backup(application string) error {
 			directories = append(directories, value.Name())
 		}
 	}
-	if len(directories) <= configuration.Application.NumberOfBackups+1 {
+	if len(directories) <= numberOfBackups+1 {
 		return nil
 	}
 	sort.Sort(sort.Reverse(sort.StringSlice(directories)))
 
-	directoriesToRemove := directories[configuration.Application.NumberOfBackups+1:]
+	directoriesToRemove := directories[numberOfBackups+1:]
 
 	for _, value := range directoriesToRemove {
 		deploymentDirectory := path.Join(appDirectory, value)

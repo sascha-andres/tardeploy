@@ -11,19 +11,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package tardeploy
+package directory
 
 import (
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
-func (configuration *Configuration) ensureDirectories(application, versionPath string) error {
-	if err := configuration.ensureAppDirectory(application); err != nil {
+func Ensure(application, versionPath string) error {
+	if err := ensureDirectory(application); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not setup %s", application))
 	}
 	log.Infof("Ensuring path for timestamp (%s) exists", versionPath)
@@ -31,11 +30,6 @@ func (configuration *Configuration) ensureDirectories(application, versionPath s
 		return errors.Wrap(err, fmt.Sprintf("Could not create %s", versionPath))
 	}
 	return nil
-}
-
-func (configuration *Configuration) ensureAppDirectory(application string) error {
-	log.Infof("Ensuring app directory for %s", application)
-	return ensureDirectory(path.Join(configuration.Directories.ApplicationDirectory, application))
 }
 
 func ensureDirectory(directory string) error {
@@ -52,4 +46,15 @@ func ensureDirectory(directory string) error {
 		}
 	}
 	return nil
+}
+
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
 }

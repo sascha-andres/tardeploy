@@ -24,6 +24,10 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/sascha-andres/tardeploy/backup"
+	"github.com/sascha-andres/tardeploy/directory"
+	"github.com/sascha-andres/tardeploy/file"
+	"github.com/sascha-andres/tardeploy/symlink"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -40,11 +44,11 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 		return errors.Wrap(err, fmt.Sprintf("Could not determine application name for %s", tarball))
 	}
 
-	if err := configuration.beforeRunTrigger(application); err != nil {
+	if err := configuration.Trigger.BeforeRunTrigger(application); err != nil {
 		return errors.Wrap(err, "Could not run trigger")
 	}
 	defer func() {
-		if err := configuration.afterRunTrigger(application); err != nil {
+		if err := configuration.Trigger.AfterRunTrigger(application); err != nil {
 			log.Warnf("Could not run after trigger: %s", err.Error())
 		}
 	}()
@@ -54,19 +58,19 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 	versionPath := path.Join(configuration.Directories.ApplicationDirectory, application, timestamp)
 	log.Infof("Deployment path: %s", versionPath)
 
-	if err := configuration.ensureDirectories(application, versionPath); err != nil {
+	if err := directory.Ensure(path.Join(configuration.Directories.ApplicationDirectory, application), versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not handle directories %s", application))
 	}
 
-	if err := configuration.ensureFiles(path.Join(configuration.Directories.TarballDirectory, tarball), versionPath); err != nil {
+	if err := file.Ensure(configuration.Application.TarCommand, configuration.Directories.Security.User, configuration.Directories.Security.Group, path.Join(configuration.Directories.TarballDirectory, tarball), versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not handle files %s", tarball))
 	}
 
-	if err := configuration.recreateWebSymbolicLink(application, versionPath); err != nil {
+	if err := symlink.RecreateWebSymbolicLink(configuration.Directories.WebRootDirectory, application, versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not handle symbolic link for %s", application))
 	}
 
-	configuration.backup(application)
+	backup.Execute(path.Join(configuration.Directories.ApplicationDirectory, application), configuration.Application.NumberOfBackups)
 
 	return nil
 }
@@ -108,15 +112,4 @@ func makeApplication(tarball string) (string, error) {
 	}
 
 	return tarball[0 : len(tarball)-4], nil
-}
-
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
 }

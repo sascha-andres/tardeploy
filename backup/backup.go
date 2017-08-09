@@ -26,7 +26,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (configuration *Configuration) Execute(appDirectory string, numberOfBackups int) error {
+func Execute(appDirectory string, numberOfBackups int) error {
 	if numberOfBackups < 0 {
 		return nil
 	}

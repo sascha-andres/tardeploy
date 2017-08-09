@@ -11,7 +11,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package tardeploy
+package file
 
 import (
 	"fmt"
@@ -28,9 +28,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (configuration *Configuration) callTarCommand(tarball, directory string) error {
-	log.Infof("Calling '%s xzf %s' in %s", configuration.Application.TarCommand, tarball, directory)
-	command := exec.Command(configuration.Application.TarCommand, "xzf", tarball)
+func callTarCommand(tarcommand, tarball, directory string) error {
+	log.Infof("Calling '%s xzf %s' in %s", tarcommand, tarball, directory)
+	command := exec.Command(tarcommand, "xzf", tarball)
 	command.Stdout = os.Stdout
 	command.Stdin = os.Stdin
 	command.Stderr = os.Stderr
@@ -47,26 +47,26 @@ func (configuration *Configuration) callTarCommand(tarball, directory string) er
 	return nil
 }
 
-func (configuration *Configuration) ensureFiles(tarball, versionPath string) error {
+func Ensure(tarCommand, user, group, tarball, versionPath string) error {
 	var (
 		userID  int
 		groupID int
 		err     error
 	)
-	if configuration.Application.TarCommand == "" {
+	if tarCommand == "" {
 		if err := deflate.Tarball(tarball, versionPath); err != nil {
 			return errors.Wrap(err, fmt.Sprintf("Could not deflate %s", tarball))
 		}
 	} else {
-		if err := configuration.callTarCommand(tarball, versionPath); err != nil {
+		if err := callTarCommand(tarCommand, tarball, versionPath); err != nil {
 			return errors.Wrap(err, fmt.Sprintf("Could not exec tar command for %s", tarball))
 		}
 	}
 
-	if userID, err = configuration.getUIDForUser(); err != nil {
+	if userID, err = getUIDForUser(user); err != nil {
 		return err
 	}
-	if groupID, err = configuration.getGIDForGroup(); err != nil {
+	if groupID, err = getGIDForGroup(group); err != nil {
 		return err
 	}
 
@@ -84,40 +84,40 @@ func (configuration *Configuration) ensureFiles(tarball, versionPath string) err
 	return nil
 }
 
-func (configuration *Configuration) getUIDForUser() (int, error) {
+func getUIDForUser(userName string) (int, error) {
 	var (
 		value int
 		err   error
 		usr   *user.User
 	)
-	if value, err = strconv.Atoi(configuration.Directories.Security.User); err == nil {
+	if value, err = strconv.Atoi(userName); err == nil {
 		return value, nil
 	}
-	usr, err = user.Lookup(configuration.Directories.Security.User)
+	usr, err = user.Lookup(userName)
 	if err != nil {
-		return -1, errors.Wrap(err, fmt.Sprintf("Could not get userid for %s", configuration.Directories.Security.User))
+		return -1, errors.Wrap(err, fmt.Sprintf("Could not get userid for %s", userName))
 	}
 	if value, err = strconv.Atoi(usr.Uid); err == nil {
 		return value, nil
 	}
-	return -1, errors.Wrap(err, fmt.Sprintf("Could not get uid for %s [returned value is %s]", configuration.Directories.Security.User, usr.Uid))
+	return -1, errors.Wrap(err, fmt.Sprintf("Could not get uid for %s [returned value is %s]", userName, usr.Uid))
 }
 
-func (configuration *Configuration) getGIDForGroup() (int, error) {
+func getGIDForGroup(groupName string) (int, error) {
 	var (
 		value int
 		err   error
 		grp   *user.Group
 	)
-	if value, err = strconv.Atoi(configuration.Directories.Security.Group); err == nil {
+	if value, err = strconv.Atoi(groupName); err == nil {
 		return value, nil
 	}
-	grp, err = user.LookupGroup(configuration.Directories.Security.Group)
+	grp, err = user.LookupGroup(groupName)
 	if err != nil {
-		return -1, errors.Wrap(err, fmt.Sprintf("Could not get userid for %s", configuration.Directories.Security.User))
+		return -1, errors.Wrap(err, fmt.Sprintf("Could not get userid for %s", groupName))
 	}
 	if value, err = strconv.Atoi(grp.Gid); err == nil {
 		return value, nil
 	}
-	return -1, errors.Wrap(err, fmt.Sprintf("Could not get gid for %s [returned value is %s]", configuration.Directories.Security.User, grp.Gid))
+	return -1, errors.Wrap(err, fmt.Sprintf("Could not get gid for %s [returned value is %s]", groupName, grp.Gid))
 }

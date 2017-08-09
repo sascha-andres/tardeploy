@@ -11,7 +11,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package tardeploy
+package trigger
 
 import (
 	"os"
@@ -21,28 +21,36 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (configuration *Configuration) beforeRunTrigger(application string) error {
-	return configuration.trigger(application, "before")
+type (
+	// TriggerConfiguration provides a place to configure triggers ( external programs ) called before or after a deployment
+	Configuration struct {
+		Before string
+		After  string
+	}
+)
+
+func (configuration *Configuration) BeforeRunTrigger(application string) error {
+	return configuration.execute(application, "before")
 }
 
-func (configuration *Configuration) afterRunTrigger(application string) error {
-	return configuration.trigger(application, "after")
+func (configuration *Configuration) AfterRunTrigger(application string) error {
+	return configuration.execute(application, "after")
 }
 
-func (configuration *Configuration) trigger(application, status string) error {
+func (configuration *Configuration) execute(application, status string) error {
 	var cmd string
 	switch status {
 	case "before":
-		if "" == configuration.Trigger.Before {
+		if "" == configuration.Before {
 			return nil
 		}
-		cmd = configuration.Trigger.Before
+		cmd = configuration.Before
 		break
 	case "after":
-		if "" == configuration.Trigger.After {
+		if "" == configuration.After {
 			return nil
 		}
-		cmd = configuration.Trigger.After
+		cmd = configuration.After
 		break
 	}
 

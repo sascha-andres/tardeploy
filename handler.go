@@ -66,7 +66,7 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 		return errors.Wrap(err, fmt.Sprintf("Could not handle files %s", tarball))
 	}
 
-	if err := symlink.RecreateWebSymbolicLink(configuration.Directories.WebRootDirectory, application, versionPath); err != nil {
+	if err := symlink.Recreate(configuration.Directories.WebRootDirectory, application, versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not handle symbolic link for %s", application))
 	}
 
@@ -88,7 +88,7 @@ func (configuration *Configuration) RemoveApplication(tarball string) error {
 		return errors.Wrap(err, fmt.Sprintf("Could not determine application name for %s", tarball))
 	}
 
-	if err := symlink.RemoveWebSymbolicLink(configuration.Directories.WebRootDirectory, application); err != nil {
+	if err := symlink.Remove(configuration.Directories.WebRootDirectory, application); err != nil {
 		return err
 	}
 

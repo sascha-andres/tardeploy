@@ -22,18 +22,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func RecreateWebSymbolicLink(webRootDirectory, application, versionPath string) error {
+func Recreate(webRootDirectory, application, versionPath string) error {
 	var err error
-	if err = RemoveWebSymbolicLink(webRootDirectory, application); err != nil {
+	if err = Remove(webRootDirectory, application); err != nil {
 		return err
 	}
-	if err = CreateWebSymbolicLink(webRootDirectory, application, versionPath); err != nil {
+	if err = Create(webRootDirectory, application, versionPath); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Could not create new symbolic link for %s", application))
 	}
 	return err
 }
 
-func RemoveWebSymbolicLink(webRootDirectory, application string) error {
+func Remove(webRootDirectory, application string) error {
 	symlinkPath := path.Join(webRootDirectory, application)
 	if _, err := os.Lstat(symlinkPath); err == nil {
 		log.Debugf("Removing symbolic link %s")
@@ -42,7 +42,7 @@ func RemoveWebSymbolicLink(webRootDirectory, application string) error {
 	return nil
 }
 
-func CreateWebSymbolicLink(webRootDirectory, application, versionPath string) error {
+func Create(webRootDirectory, application, versionPath string) error {
 	deploymentDirectory := path.Join(webRootDirectory, application)
 	log.Debugf("Link from %s to %s", versionPath, deploymentDirectory)
 	return os.Symlink(versionPath, deploymentDirectory)

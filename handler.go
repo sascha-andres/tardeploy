@@ -88,7 +88,7 @@ func (configuration *Configuration) RemoveApplication(tarball string) error {
 		return errors.Wrap(err, fmt.Sprintf("Could not determine application name for %s", tarball))
 	}
 
-	if err := configuration.removeWebSymbolicLink(application); err != nil {
+	if err := symlink.RemoveWebSymbolicLink(configuration.Directories.WebRootDirectory, application); err != nil {
 		return err
 	}
 

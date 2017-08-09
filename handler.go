@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/sascha-andres/tardeploy/backup"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -66,7 +67,7 @@ func (configuration *Configuration) SetupApplication(tarball string) error {
 		return errors.Wrap(err, fmt.Sprintf("Could not handle symbolic link for %s", application))
 	}
 
-	configuration.backup(application)
+	backup.Execute(path.Join(configuration.Directories.ApplicationDirectory, application), configuration.Application.NumberOfBackups)
 
 	return nil
 }

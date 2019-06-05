@@ -122,4 +122,5 @@ A sample service file can be found in the directory `systemd/`. It assumes you h
 
 |Version|Description|
 |---|---|
+|1.0.0|use go modules|
 |0.1.0|Initial version|

@@ -55,7 +55,7 @@ func main() {
 	log.WithField("version", version).Info("tardeploy")
 
 	// gops
-	if err := agent.Listen(nil); err != nil {
+	if err := agent.Listen(agent.Options{}); err != nil {
 		log.Fatalln(err)
 	}
 
